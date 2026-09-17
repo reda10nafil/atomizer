@@ -1,9 +1,19 @@
 import { motion } from 'motion/react'
-import { Play, Pause, Monitor, Settings, Github } from 'lucide-react'
+import { Play, Pause, Monitor, Settings, Github, Camera, Maximize, Keyboard, Info } from 'lucide-react'
 import { useAtomizerStore } from '../store/useAtomizerStore'
+import { takeHighResScreenshot } from '../utils/screenshot'
+import { useRef } from 'react'
 
 export function Header() {
-  const { isPlaying, togglePlay, toggleUI } = useAtomizerStore()
+  const { isPlaying, togglePlay, toggleUI, toggleFullscreen, toggleShortcuts, fullscreen } = useAtomizerStore()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  const handleScreenshot = async () => {
+    const canvas = document.querySelector('canvas')
+    if (canvas) {
+      await takeHighResScreenshot(canvas, 2, 'atomizer-screenshot.png')
+    }
+  }
 
   return (
     <motion.header
@@ -17,7 +27,7 @@ export function Header() {
           Atomizer
         </h1>
         <span className="text-xs text-muted-foreground px-2 py-1 glass rounded">
-          v0.1.0
+          v0.2.0
         </span>
       </div>
 
@@ -27,7 +37,7 @@ export function Header() {
           whileTap={{ scale: 0.95 }}
           onClick={togglePlay}
           className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
-          title={isPlaying ? 'Pause' : 'Play'}
+          title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
         >
           {isPlaying ? <Pause size={20} /> : <Play size={20} />}
         </motion.button>
@@ -35,9 +45,39 @@ export function Header() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={handleScreenshot}
+          className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
+          title="Screenshot (S)"
+        >
+          <Camera size={20} />
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleFullscreen}
+          className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
+          title="Fullscreen (F)"
+        >
+          {fullscreen ? <Maximize size={20} /> : <Monitor size={20} />}
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleShortcuts}
+          className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
+          title="Keyboard Shortcuts (H)"
+        >
+          <Keyboard size={20} />
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={toggleUI}
           className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
-          title="Toggle UI"
+          title="Toggle UI (U)"
         >
           <Settings size={20} />
         </motion.button>
