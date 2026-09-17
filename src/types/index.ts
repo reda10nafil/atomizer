@@ -12,7 +12,11 @@ export type ParticleMode =
   | "rain"
   | "dna"
   | "fractal"
-  | "tunnel";
+  | "tunnel"
+  | "audio-reactive"
+  | "webcam"
+  | "weather"
+  | "clock";
 
 export interface AtomizerState {
   particleCount: number;
@@ -33,6 +37,17 @@ export interface AtomizerState {
   backgroundColor: string;
   showUI: boolean;
   fps: number;
+  fullscreen: boolean;
+  showShortcuts: boolean;
+  audioEnabled: boolean;
+  audioSensitivity: number;
+  showStats: boolean;
+  weatherMode: 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'stormy';
+  timeMode: 'day' | 'night' | 'auto';
+  pomodoroActive: boolean;
+  pomodoroTime: number;
+  imageUrl: string | null;
+  imageParticles: boolean;
 }
 
 export interface Preset {
@@ -51,6 +66,30 @@ export interface Preset {
   secondaryColor: string;
   backgroundColor: string;
   mouseInfluence: number;
+  audioEnabled: boolean;
+  audioSensitivity: number;
+  imageUrl?: string | null;
+  createdAt?: string;
+  author?: string;
+  downloads?: number;
+  rating?: number;
+}
+
+export interface WallpaperItem {
+  id: string;
+  title: string;
+  author: string;
+  thumbnail: string;
+  preview: string;
+  downloadUrl: string;
+  resolution: string;
+  category: string;
+  tags: string[];
+  downloads: number;
+  rating: number;
+  source: 'wallpaper-abyss' | 'wallpaper-engine' | 'lively' | 'community';
+  isLive: boolean;
+  fileSize?: string;
 }
 
 export const defaultState: AtomizerState = {
@@ -71,5 +110,15 @@ export const defaultState: AtomizerState = {
   secondaryColor: "#00d2ff",
   backgroundColor: "#0a0a0f",
   showUI: true,
-  fps: 60,
+  fullscreen: false,
+  showShortcuts: false,
+  audioEnabled: false,
+  audioSensitivity: 0.5,
+  showStats: false,
+  weatherMode: 'sunny',
+  timeMode: 'auto',
+  pomodoroActive: false,
+  pomodoroTime: 25 * 60,
+  imageUrl: null,
+  imageParticles: false,
 };
