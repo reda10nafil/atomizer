@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { AtomizerState, defaultState, ParticleMode } from '../types'
+import { AtomizerState, defaultState, ParticleMode, Preset } from '../types'
 
 interface AtomizerActions {
   setParticleCount: (count: number) => void
@@ -21,6 +21,20 @@ interface AtomizerActions {
   setFPS: (fps: number) => void
   reset: () => void
   loadPreset: (preset: Partial<AtomizerState>) => void
+  toggleFullscreen: () => void
+  toggleShortcuts: () => void
+  toggleAudio: () => void
+  setAudioSensitivity: (sensitivity: number) => void
+  toggleStats: () => void
+  setWeatherMode: (mode: 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'stormy') => void
+  setTimeMode: (mode: 'day' | 'night' | 'auto') => void
+  togglePomodoro: () => void
+  setPomodoroTime: (seconds: number) => void
+  setImageUrl: (url: string | null) => void
+  setImageParticles: (enabled: boolean) => void
+  savePreset: (name: string) => Preset
+  exportPreset: () => string
+  importPreset: (json: string) => void
 }
 
 export type AtomizerStore = AtomizerState & AtomizerActions
@@ -52,4 +66,101 @@ export const useAtomizerStore = create<AtomizerStore>()((set, get) => ({
     ...state,
     ...preset,
   })),
+  
+  toggleFullscreen: () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+      set({ fullscreen: true })
+    } else {
+      document.exitFullscreen()
+      set({ fullscreen: false })
+    }
+  },
+  
+  toggleShortcuts: () => set((state) => ({ showShortcuts: !state.showShortcuts })),
+  
+  toggleAudio: () => set((state) => ({ audioEnabled: !state.audioEnabled })),
+  
+  setAudioSensitivity: (sensitivity) => set({ audioSensitivity: sensitivity }),
+  
+  toggleStats: () => set((state) => ({ showStats: !state.showStats })),
+  
+  setWeatherMode: (mode) => set({ weatherMode: mode }),
+  
+  setTimeMode: (mode) => set({ timeMode: mode }),
+  
+  togglePomodoro: () => set((state) => ({ pomodoroActive: !state.pomodoroActive })),
+  
+  setPomodoroTime: (seconds) => set({ pomodoroTime: seconds }),
+  
+  setImageUrl: (url) => set({ imageUrl: url }),
+  
+  setImageParticles: (enabled) => set({ imageParticles: enabled }),
+  
+  savePreset: (name) => {
+    const state = get()
+    const preset: Preset = {
+      id: crypto.randomUUID(),
+      name,
+      particleCount: state.particleCount,
+      particleSize: state.particleSize,
+      animationSpeed: state.animationSpeed,
+      dispersionSpeed: state.dispersionSpeed,
+      intensity: state.intensity,
+      turbulence: state.turbulence,
+      rotation: state.rotation,
+      mode: state.mode,
+      primaryColor: state.primaryColor,
+      secondaryColor: state.secondaryColor,
+      backgroundColor: state.backgroundColor,
+      mouseInfluence: state.mouseInfluence,
+      audioEnabled: state.audioEnabled,
+      audioSensitivity: state.audioSensitivity,
+      imageUrl: state.imageUrl,
+      createdAt: new Date().toISOString(),
+    }
+    
+    // Download as JSON file
+    const blob = new Blob([JSON.stringify(preset, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name.toLowerCase().replace(/\s+/g, '-')}-preset.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    
+    return preset
+  },
+  
+  exportPreset: () => {
+    const state = get()
+    return JSON.stringify({
+      particleCount: state.particleCount,
+      particleSize: state.particleSize,
+      animationSpeed: state.animationSpeed,
+      dispersionSpeed: state.dispersionSpeed,
+      intensity: state.intensity,
+      turbulence: state.turbulence,
+      rotation: state.rotation,
+      mode: state.mode,
+      primaryColor: state.primaryColor,
+      secondaryColor: state.secondaryColor,
+      backgroundColor: state.backgroundColor,
+      mouseInfluence: state.mouseInfluence,
+      audioEnabled: state.audioEnabled,
+      audioSensitivity: state.audioSensitivity,
+    }, null, 2)
+  },
+  
+  importPreset: (json) => {
+    try {
+      const preset = JSON.parse(json)
+      set((state) => ({
+        ...state,
+        ...preset,
+      }))
+    } catch (e) {
+      console.error('Failed to import preset:', e)
+    }
+  },
 }))
