@@ -6,15 +6,17 @@ import { ColorPicker } from './ColorPicker'
 import { ImageImport } from './ImageImport'
 import { PresetManager } from './PresetManager'
 import { WallpaperHub } from './WallpaperHub'
+import { WallpaperScraper } from './WallpaperScraper'
 import { useState } from 'react'
-import { Settings, Palette, Image, FolderOpen, Monitor } from 'lucide-react'
+import { Settings, Palette, Image, FolderOpen, Monitor, Download } from 'lucide-react'
 
 const tabs = [
   { id: 'modes', label: 'Modes', icon: Settings },
   { id: 'colors', label: 'Colors', icon: Palette },
   { id: 'image', label: 'Image', icon: Image },
   { id: 'presets', label: 'Presets', icon: FolderOpen },
-  { id: 'wallpapers', label: 'Hub', icon: Monitor },
+  { id: 'hub', label: 'Hub', icon: Monitor },
+  { id: 'scraper', label: 'Scraper', icon: Download },
 ]
 
 export function ControlPanel() {
@@ -47,7 +49,7 @@ export function ControlPanel() {
       className="absolute left-0 top-20 bottom-20 w-80 z-10 flex flex-col"
     >
       {/* Tabs */}
-      <div className="flex border-b border-white/10">
+      <div className="flex border-b border-white/10 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon
           return (
@@ -56,23 +58,22 @@ export function ControlPanel() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 p-3 flex items-center justify-center gap-1 text-xs transition-colors ${
+              className={`flex-1 min-w-[60px] p-3 flex items-center justify-center gap-1 text-xs transition-colors ${
                 activeTab === tab.id
                   ? 'bg-primary/20 text-primary border-b-2 border-primary'
                   : 'hover:bg-white/5 text-muted-foreground'
               }`}
             >
               <Icon size={14} />
-              <span className="hidden xl:inline">{tab.label}</span>
             </motion.button>
           )
         })}
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto">
         {activeTab === 'modes' && (
-          <div className="space-y-6">
+          <div className="p-4 space-y-6">
             <ModeSelector />
 
             <div className="space-y-4">
@@ -165,7 +166,8 @@ export function ControlPanel() {
         {activeTab === 'colors' && <ColorPicker />}
         {activeTab === 'image' && <ImageImport />}
         {activeTab === 'presets' && <PresetManager />}
-        {activeTab === 'wallpapers' && <WallpaperHub />}
+        {activeTab === 'hub' && <WallpaperHub />}
+        {activeTab === 'scraper' && <WallpaperScraper />}
       </div>
     </motion.aside>
   )
