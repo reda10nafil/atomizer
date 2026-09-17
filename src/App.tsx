@@ -6,9 +6,11 @@ import { ParticleSystem } from './features/particle-engine/ParticleSystem'
 import { ControlPanel } from './components/ControlPanel'
 import { Header } from './components/Header'
 import { Stats } from './components/Stats'
+import { useMouseTracking } from './hooks/useMouseTracking'
 
 function App() {
   const { backgroundColor, showUI } = useAtomizerStore()
+  useMouseTracking()
 
   return (
     <div className="relative w-full h-full overflow-hidden">
